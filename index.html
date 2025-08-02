@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlastiCash</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #3498db;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --accent-color: #f39c12;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            color: var(--dark-color);
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background-color: white;
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 25px;
+            padding: 12px 24px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #27ae60;
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+            border-radius: 25px;
+            padding: 12px 24px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #2980b9;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .price-tag {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            display: inline-block;
+        }
+        
+        .tab-container {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            background-color: white;
+            border-top: 1px solid #eee;
+        }
+        
+        .tab-item {
+            text-align: center;
+            cursor: pointer;
+        }
+        
+        .tab-item.active {
+            color: var(--primary-color);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .map-container {
+            height: 300px;
+            width: 100%;
+            background-color: #eee;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: #e74c3c;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Authentication Screens -->
+        <div id="auth-screens">
+            <!-- Login Screen -->
+            <div id="login-screen" class="p-6">
+                <h1 class="text-3xl font-bold text-center mb-8">Welcome to PlastiCash</h1>
+                <div class="flex justify-center mb-8">
+                    <img src="https://placehold.co/200x200" alt="PlastiCash logo featuring a green recycling symbol with dollar sign incorporated" />
+                </div>
+                
+                <div class="card mb-4">
+                    <h2 class="text-xl font-semibold mb-4">Login to your account</h2>
+                    <form id="login-form">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2" for="login-phone">Phone Number</label>
+                            <input type="tel" id="login-phone" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Enter your phone number">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2" for="login-password">Password</label>
+                            <input type="password" id="login-password" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Enter your password">
+                        </div>
+                        <button type="submit" class="btn-primary w-full mb-4">Login</button>
+                    </form>
+                    <div class="text-center">
+                        <p>Or login with</p>
+                        <button class="btn-secondary mt-2">
+                            <div class="flex items-center justify-center">
+                                <img src="https://placehold.co/20x20" alt="Google logo" class="mr-2" />
+                                Google
+                            </div>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="text-center">
+                    <p>Don't have an account? <a href="#" id="show-signup" class="text-blue-500">Sign up</a></p>
+                </div>
+            </div>
+            
+            <!-- Signup Screen -->
+            <div id="signup-screen" class="p-6 hidden">
+                <h1 class="text-3xl font-bold text-center mb-8">Create Account</h1>
+                
+                <div class="card mb-4">
+                    <h2 class="text-xl font-semibold mb-4">Create your account</h2>
+                    <form id="signup-form">
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2" for="signup-name">Full Name</label>
+                            <input type="text" id="signup-name" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Enter your full name">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2" for="signup-phone">Phone Number</label>
+                            <input type="tel" id="signup-phone" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Enter your phone number">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2" for="signup-email">Email (Optional)</label>
+                            <input type="email" id="signup-email" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Enter your email">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2" for="signup-password">Password</label>
+                            <input type="password" id="signup-password" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Create a password">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-gray-700 mb-2" for="signup-confirm-password">Confirm Password</label>
+                            <input type="password" id="signup-confirm-password" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Confirm your password">
+                        </div>
+                        <div class="mb-4">
+                            <input type="checkbox" id="signup-location" checked>
+                            <label class="text-gray-700 ml-2" for="signup-location">Share my current location</label>
+                        </div>
+                        <button type="submit" class="btn-primary w-full mb-4">Sign Up</button>
+                    </form>
+                </div>
+                
+                <div class="text-center">
+                    <p>Already have an account? <a href="#" id="show-login" class="text-blue-500">Login</a></p>
+                </div>
+            </div>
+            
+            <!-- OTP Verification Screen -->
+            <div id="otp-screen" class="p-6 hidden">
+                <h1 class="text-3xl font-bold text-center mb-8">Verify Your Number</h1>
+                
+                <div class="card mb-4">
+                    <p class="mb-4">We've sent a verification code to <span id="otp-phone-display"></span></p>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Enter 6-digit OTP</label>
+                        <div class="flex justify-between">
+                            <input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-300 rounded-lg otp-input">
+                            <input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-300 rounded-lg otp-input">
+                            <input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-300 rounded-lg otp-input">
+                            <input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-300 rounded-lg otp-input">
+                            <input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-300 rounded-lg otp-input">
+                            <input type="text" maxlength="1" class="w-12 h-12 text-center border border-gray-300 rounded-lg otp-input">
+                        </div>
+                    </div>
+                    
+                    <button id="verify-otp" class="btn-primary w-full mb-4">Verify</button>
+                    
+                    <div class="text-center">
+                        <p>Didn't receive code? <a href="#" class="text-blue-500">Resend (30s)</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main App Screens (hidden by default) -->
+        <div id="app-screens" class="hidden">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-4 bg-white border-b border-gray-200">
+                <div class="flex items-center">
+                    <img src="https://placehold.co/40x40" alt="PlastiCash small logo" class="mr-2" />
+                    <h1 class="text-xl font-bold">PlastiCash</h1>
+                </div>
+                <div class="relative">
+                    <button id="notification-btn">
+                        <img src="https://placehold.co/24x24" alt="Bell icon for notifications" />
+                        <div class="notification-badge">3</div>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div class="p-4" id="main-content">
+                <!-- Dashboard Screen -->
+                <div id="dashboard-screen">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Dashboard</h2>
+                        <button id="logout-btn" class="text-sm text-gray-500">Logout</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="card">
+                            <h3 class="text-gray-500 mb-2">Total Plastic Submitted</h3>
+                            <p class="text-2xl font-bold">127.5 kg</p>
+                        </div>
+                        <div class="card">
+                            <h3 class="text-gray-500 mb-2">Total Earnings</h3>
+                            <p class="text-2xl font-bold">₹1,275.00</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card mb-4">
+                        <h3 class="text-gray-500 mb-2">Current Plastic Prices</h3>
+                        <div class="flex flex-wrap gap-2 mb-4">
+                            <span class="price-tag">PET: ₹12/kg</span>
+                            <span class="price-tag">HDPE: ₹15/kg</span>
+                            <span class="price-tag">LDPE: ₹10/kg</span>
+                            <span class="price-tag">PP: ₹11/kg</span>
+                        </div>
+                        <p class="text-sm text-gray-500">Prices updated: Today at 9:30 AM</p>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <button id="schedule-pickup" class="btn-primary">
+                            Schedule Pickup
+                        </button>
+                        <button id="find-center" class="btn-secondary">
+                            Find Collection Center
+                        </button>
+                    </div>
+                    
+                    <div class="card">
+                        <h3 class="text-xl font-semibold mb-4">Recent Transactions</h3>
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center p-2 border-b border-gray-100">
+                                <div>
+                                    <p class="font-medium">Drop-off</p>
+                                    <p class="text-sm text-gray-500">12 Sep 2023, 10:45 AM</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-green-600">+₹225.00</p>
+                                    <p class="text-sm text-gray-500">18.0 kg PET</p>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center p-2 border-b border-gray-100">
+                                <div>
+                                    <p class="font-medium">Pickup</p>
+                                    <p class="text-sm text-gray-500">8 Sep 2023, 2:30 PM</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-green-600">+₹450.00</p>
+                                    <p class="text-sm text-gray-500">30.0 kg Mixed</p>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center p-2 border-b border-gray-100">
+                                <div>
+                                    <p class="font-medium">Pickup</p>
+                                    <p class="text-sm text-gray-500">3 Sep 2023, 11:15 AM</p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="font-bold text-green-600">+₹375.00</p>
+                                    <p class="text-sm text-gray-500">25.0 kg HDPE</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sell Plastic Screen -->
+                <div id="sell-screen" class="hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Sell Your Plastic</h2>
+                        <button id="back-from-sell" class="text-sm text-gray-500">Back</button>
+                    </div>
+                    
+                    <form id="sell-form">
+                        <div class="card mb-4">
+                            <h3 class="text-xl font-semibold mb-4">Plastic Details</h3>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2" for="plastic-type">Plastic Type</label>
+                                <select id="plastic-type" class="w-full p-3 border border-gray-300 rounded-lg">
+                                    <option value="PET">PET (Transparent bottles)</option>
+                                    <option value="HDPE">HDPE (Milk jugs, detergent bottles)</option>
+                                    <option value="LDPE">LDPE (Shopping bags, cling wrap)</option>
+                                    <option value="PP">PP (Straws, food containers)</option>
+                                    <option value="mixed">Mixed Plastic</option>
+                                </select>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2" for="plastic-weight">Weight (kg)</label>
+                                <input type="number" id="plastic-weight" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Enter weight in kilograms">
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2" for="plastic-photo">Photo of Plastic</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center">
+                                    <img src="https://placehold.co/300x100" alt="Upload area for plastic waste photos" id="plastic-photo-preview" class="hidden mb-2" />
+                                    <p>Click to upload photo</p>
+                                    <input type="file" id="plastic-photo" accept="image/*" class="hidden">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <h3 class="text-xl font-semibold mb-4">Collection Method</h3>
+                            
+                            <div class="mb-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="collection-method" value="pickup" checked>
+                                    <span class="ml-2">Pickup by Agent (₹10 fee)</span>
+                                </label>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="collection-method" value="dropoff">
+                                    <span class="ml-2">Self Drop-off at Collection Center</span>
+                                </label>
+                            </div>
+                            
+                            <div id="pickup-details" class="mb-4">
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2" for="pickup-date">Preferred Pickup Date</label>
+                                    <input type="date" id="pickup-date" class="w-full p-3 border border-gray-300 rounded-lg">
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2" for="pickup-time">Preferred Time</label>
+                                    <select id="pickup-time" class="w-full p-3 border border-gray-300 rounded-lg">
+                                        <option value="morning">Morning (9 AM - 12 PM)</option>
+                                        <option value="afternoon">Afternoon (1 PM - 5 PM)</option>
+                                        <option value="evening">Evening (6 PM - 8 PM)</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label class="block text-gray-700 mb-2">Current Location</label>
+                                    <div class="map-container">
+                                        <img src="https://placehold.co/600x300" alt="Map showing current location for pickup" class="map-placeholder" />
+                                    </div>
+                                    <button class="btn-primary mt-2 w-full">Update Location</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <h3 class="text-xl font-semibold mb-4">Estimated Payout</h3>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-700">Plastic Value:</span>
+                                <span id="plastic-value" class="font-bold">₹0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-gray-700">Pickup Fee:</span>
+                                <span id="pickup-fee" class="font-bold">₹0.00</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-gray-700">Total:</span>
+                                <span id="total-payout" class="font-bold text-xl text-green-600">₹0.00</span>
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn-primary w-full">Submit</button>
+                    </form>
+                </div>
+                
+                <!-- Collection Centers Screen -->
+                <div id="centers-screen" class="hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Collection Centers</h2>
+                        <button id="back-from-centers" class="text-sm text-gray-500">Back</button>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <div class="map-container mb-4">
+                            <img src="https://placehold.co/600x300" alt="Map showing nearby plastic collection centers" class="map-placeholder" />
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <input type="text" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="Search collection centers...">
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="card flex items-center">
+                            <img src="https://placehold.co/80x80" alt="Eco Recycling Center location photo" class="w-16 h-16 rounded-lg mr-4" />
+                            <div>
+                                <h3 class="font-bold">Eco Recycling Center</h3>
+                                <p class="text-sm text-gray-500">1.2 km away</p>
+                                <p class="text-sm">Open today: 8 AM - 7 PM</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card flex items-center">
+                            <img src="https://placehold.co/80x80" alt="Green Earth Collection Point location photo" class="w-16 h-16 rounded-lg mr-4" />
+                            <div>
+                                <h3 class="font-bold">Green Earth Collection</h3>
+                                <p class="text-sm text-gray-500">2.5 km away</p>
+                                <p class="text-sm">Open today: 9 AM - 6 PM</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card flex items-center">
+                            <img src="https://placehold.co/80x80" alt="Sustainable Plastics Depot location photo" class="w-16 h-16 rounded-lg mr-4" />
+                            <div>
+                                <h3 class="font-bold">Sustainable Plastics Depot</h3>
+                                <p class="text-sm text-gray-500">3.1 km away</p>
+                                <p class="text-sm">Open today: 8:30 AM - 7:30 PM</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card flex items-center">
+                            <img src="https://placehold.co/80x80" alt="Community Recycling Hub location photo" class="w-16 h-16 rounded-lg mr-4" />
+                            <div>
+                                <h3 class="font-bold">Community Recycling Hub</h3>
+                                <p class="text-sm text-gray-500">4.2 km away</p>
+                                <p class="text-sm">Open today: 10 AM - 8 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notification Screen -->
+                <div id="notification-screen" class="hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold">Notifications</h2>
+                        <button id="back-from-notifications" class="text-sm text-gray-500">Back</button>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <div class="card">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold">Pickup Scheduled</h3>
+                                <span class="text-sm text-gray-500">Today, 10:30 AM</span>
+                            </div>
+                            <p>Your pickup for 25 kg plastic has been scheduled for tomorrow between 9 AM - 12 PM.</p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold">Price Update</h3>
+                                <span class="text-sm text-gray-500">Yesterday, 9:15 AM</span>
+                            </div>
+                            <p>PET plastic prices have increased to ₹12/kg today.</p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold">Reward Points</h3>
+                                <span class="text-sm text-gray-500">2 days ago</span>
+                            </div>
+                            <p>You've earned 25 points for your last plastic drop-off.</p>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="font-bold">New Center</h3>
+                                <span class="text-sm text-gray-500">5 days ago</span>
+                            </div>
+                            <p>A new collection center has opened near you at Main Market.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Navigation -->
+            <div class="tab-container">
+                <div class="tab-item active" data-tab="dashboard">
+                    <img src="https://placehold.co/24x24" alt="Dashboard icon" />
+                    <p>Dashboard</p>
+                </div>
+                <div class="tab-item" data-tab="sell">
+                    <img src="https://placehold.co/24x24" alt="Sell plastic icon" />
+                    <p>Sell</p>
+                </div>
+                <div class="tab-item" data-tab="centers">
+                    <img src="https://placehold.co/24x24" alt="Collection centers icon" />
+                    <p>Centers</p>
+                </div>
+                <div class="tab-item" data-tab="profile">
+                    <img src="https://placehold.co/24x24" alt="Profile icon" />
+                    <p>Profile</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const authScreens = document.getElementById('auth-screens');
+        const appScreens = document.getElementById('app-screens');
+        const loginScreen = document.getElementById('login-screen');
+        const signupScreen = document.getElementById('signup-screen');
+        const otpScreen = document.getElementById('otp-screen');
+        const showSignup = document.getElementById('show-signup');
+        const showLogin = document.getElementById('show-login');
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const verifyOtpBtn = document.getElementById('verify-otp');
+        const otpPhoneDisplay = document.getElementById('otp-phone-display');
+        const logoutBtn = document.getElementById('logout-btn');
+        const schedulePickupBtn = document.getElementById('schedule-pickup');
+        const findCenterBtn = document.getElementById('find-center');
+        const dashboardScreen = document.getElementById('dashboard-screen');
+        const sellScreen = document.getElementById('sell-screen');
+        const centersScreen = document.getElementById('centers-screen');
+        const notificationScreen = document.getElementById('notification-screen');
+        const backFromSell = document.getElementById('back-from-sell');
+        const backFromCenters = document.getElementById('back-from-centers');
+        const notificationBtn = document.getElementById('notification-btn');
+        const backFromNotifications = document.getElementById('back-from-notifications');
+        const plasticWeightInput = document.getElementById('plastic-weight');
+        const plasticTypeSelect = document.getElementById('plastic-type');
+        const collectionMethodRadios = document.getElementsByName('collection-method');
+        const plasticValueDisplay = document.getElementById('plastic-value');
+        const pickupFeeDisplay = document.getElementById('pickup-fee');
+        const totalPayoutDisplay = document.getElementById('total-payout');
+        const sellForm = document.getElementById('sell-form');
+        const plasticPhotoInput = document.getElementById('plastic-photo');
+        const plasticPhotoPreview = document.getElementById('plastic-photo-preview');
+        const tabItems = document.querySelectorAll('.tab-item');
+        
+        // Current user state
+        let currentUser = null;
+        let isLoggedIn = false;
+        
+        // Plastic prices (could be fetched from API in real app)
+        const plasticPrices = {
+            'PET': 12,
+            'HDPE': 15,
+            'LDPE': 10,
+            'PP': 11,
+            'mixed': 9
+        };
+        
+        // Event Listeners
+        showSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginScreen.classList.add('hidden');
+            signupScreen.classList.remove('hidden');
+        });
+        
+        showLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            signupScreen.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+        });
+        
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('login-phone').value;
+            const password = document.getElementById('login-password').value;
+            
+            // Simple validation
+            if (phone && password) {
+                // In a real app, this would call an authentication API
+                simulateLogin(phone);
+            } else {
+                alert('Please enter both phone number and password');
+            }
+        });
+        
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const phone = document.getElementById('signup-phone').value;
+            const password = document.getElementById('signup-password').value;
+            
+            // Simple validation
+            if (name && phone && password) {
+                otpPhoneDisplay.textContent = phone;
+                signupScreen.classList.add('hidden');
+                otpScreen.classList.remove('hidden');
+            } else {
+                alert('Please fill in all required fields');
+            }
+        });
+        
+        verifyOtpBtn.addEventListener('click', () => {
+            // In a real app, would verify OTP with backend
+            simulateLogin(document.getElementById('signup-phone').value);
+        });
+        
+        logoutBtn.addEventListener('click', () => {
+            isLoggedIn = false;
+            currentUser = null;
+            authScreens.classList.remove('hidden');
+            appScreens.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+            signupScreen.classList.add('hidden');
+            otpScreen.classList.add('hidden');
+        });
+        
+        schedulePickupBtn.addEventListener('click', () => {
+            dashboardScreen.classList.add('hidden');
+            sellScreen.classList.remove('hidden');
+            updateActiveTab('sell');
+        });
+        
+        findCenterBtn.addEventListener('click', () => {
+            dashboardScreen.classList.add('hidden');
+            centersScreen.classList.remove('hidden');
+            updateActiveTab('centers');
+        });
+        
+        backFromSell.addEventListener('click', () => {
+            sellScreen.classList.add('hidden');
+            dashboardScreen.classList.remove('hidden');
+            updateActiveTab('dashboard');
+        });
+        
+        backFromCenters.addEventListener('click', () => {
+            centersScreen.classList.add('hidden');
+            dashboardScreen.classList.remove('hidden');
+            updateActiveTab('dashboard');
+        });
+        
+        notificationBtn.addEventListener('click', () => {
+            dashboardScreen.classList.add('hidden');
+            notificationScreen.classList.remove('hidden');
+        });
+        
+        backFromNotifications.addEventListener('click', () => {
+            notificationScreen.classList.add('hidden');
+            dashboardScreen.classList.remove('hidden');
+        });
+        
+        plasticWeightInput.addEventListener('input', updatePayoutCalculation);
+        plasticTypeSelect.addEventListener('change', updatePayoutCalculation);
+        
+        Array.from(collectionMethodRadios).forEach(radio => {
+            radio.addEventListener('change', updatePayoutCalculation);
+        });
+        
+        plasticPhotoInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    plasticPhotoPreview.src = event.target.result;
+                    plasticPhotoPreview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        sellForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Your plastic collection request has been submitted successfully!');
+            sellScreen.classList.add('hidden');
+            dashboardScreen.classList.remove('hidden');
+            updateActiveTab('dashboard');
+            sellForm.reset();
+            plasticPhotoPreview.classList.add('hidden');
+        });
+        
+        tabItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const tabName = item.getAttribute('data-tab');
+                navigateToTab(tabName);
+            });
+        });
+        
+        // Functions
+        function simulateLogin(phone) {
+            currentUser = {
+                name: "User",
+                phone: phone,
+                plasticTotal: 127.5,
+                earnings: 1275
+            };
+            
+            isLoggedIn = true;
+            authScreens.classList.add('hidden');
+            appScreens.classList.remove('hidden');
+        }
+        
+        function updatePayoutCalculation() {
+            const weight = parseFloat(plasticWeightInput.value) || 0;
+            const plasticType = plasticTypeSelect.value;
+            const collectionMethod = document.querySelector('input[name="collection-method"]:checked').value;
+            
+            const plasticPrice = plasticPrices[plasticType];
+            const plasticValue = weight * plasticPrice;
+            
+            let pickupFee = 0;
+            if (collectionMethod === 'pickup') {
+                pickupFee = 10;
+            }
+            
+            const totalPayout = plasticValue - pickupFee;
+            
+            plasticValueDisplay.textContent = ₹${plasticValue.toFixed(2)};
+            pickupFeeDisplay.textContent = ₹${pickupFee.toFixed(2)};
+            totalPayoutDisplay.textContent = ₹${totalPayout.toFixed(2)};
+        }
+        
+        function updateActiveTab(tabName) {
+            tabItems.forEach(item => {
+                if (item.getAttribute('data-tab') === tabName) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+        
+        function navigateToTab(tabName) {
+            switch(tabName) {
+                case 'dashboard':
+                    sellScreen.classList.add('hidden');
+                    centersScreen.classList.add('hidden');
+                    notificationScreen.classList.add('hidden');
+                    dashboardScreen.classList.remove('hidden');
+                    break;
+                case 'sell':
+                    dashboardScreen.classList.add('hidden');
+                    centersScreen.classList.add('hidden');
+                    notificationScreen.classList.add('hidden');
+                    sellScreen.classList.remove('hidden');
+                    break;
+                case 'centers':
+                    dashboardScreen.classList.add('hidden');
+                    sellScreen.classList.add('hidden');
+                    notificationScreen.classList.add('hidden');
+                    centersScreen.classList.remove('hidden');
+                    break;
+                case 'profile':
+                    alert('Profile screen would show here');
+                    break;
+            }
+            
+            updateActiveTab(tabName);
+        }
+        
+        // Initialize OTP input fields
+        const otpInputs = document.querySelectorAll('.otp-input');
+        otpInputs.forEach((input, index) => {
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && input.value === '' && index > 0) {
+                    otpInputs[index - 1].focus();
+                }
+            });
+            
+            input.addEventListener('input', (e) => {
+                if (input.value.length === 1 && index < otpInputs.length - 1) {
+                    otpInputs[index + 1].focus();
+                }
+                
+                if (index === otpInputs.length - 1 && input.value.length === 1) {
+                    verifyOtpBtn.focus();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
